@@ -1,0 +1,1181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebWorth - Website Pricing Analyzer</title>
+  <style>
+    :root {
+      --ink: #16201f;
+      --muted: #63706d;
+      --line: #dbe2df;
+      --paper: #f8faf8;
+      --panel: #ffffff;
+      --teal: #0f766e;
+      --teal-dark: #0b4f49;
+      --coral: #c2410c;
+      --gold: #b7791f;
+      --blue: #2452a4;
+      --shadow: 0 18px 48px rgba(22, 32, 31, 0.10);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(15, 118, 110, 0.08) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(15, 118, 110, 0.06) 1px, transparent 1px),
+        var(--paper);
+      background-size: 44px 44px;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 272px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      background: #142321;
+      color: #eef7f4;
+      padding: 24px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 8px 10px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #e9f7f2;
+      color: #0b4f49;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .brand span {
+      color: #a8bfba;
+      font-size: 0.78rem;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav button {
+      border: 0;
+      background: transparent;
+      color: #c9d9d5;
+      text-align: left;
+      padding: 11px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .nav button.active, .nav button:hover {
+      background: rgba(255, 255, 255, 0.10);
+      color: #ffffff;
+    }
+
+    .soon-box {
+      margin-top: auto;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .soon-box strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .soon-box p {
+      margin: 0;
+      color: #bdd0cc;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .ad-slot {
+      border: 1px dashed #aab8b5;
+      border-radius: 8px;
+      min-height: 92px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.72);
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .sidebar .ad-slot {
+      min-height: 160px;
+      color: #bdd0cc;
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    main {
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0 0 7px;
+      font-size: clamp(1.65rem, 3vw, 2.6rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .lede {
+      max-width: 760px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      white-space: nowrap;
+      border: 1px solid #cfe0db;
+      color: var(--teal-dark);
+      background: #ecf8f5;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.92fr) minmax(360px, 1.08fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .panel-header span {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .form-grid {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    label, .field-group {
+      display: grid;
+      gap: 8px;
+      color: #35413f;
+      font-weight: 700;
+      font-size: 0.86rem;
+    }
+
+    .mini-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .mini-field span {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #cfd8d5;
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+    }
+
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f2f6f4;
+    }
+
+    .mode-tabs button {
+      border: 0;
+      min-height: 42px;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .mode-tabs button.active {
+      background: #ffffff;
+      color: var(--teal-dark);
+      box-shadow: 0 4px 14px rgba(22, 32, 31, 0.09);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .upload-zone {
+      border: 1px dashed #a9b8b4;
+      border-radius: 8px;
+      padding: 18px;
+      background: #fbfdfc;
+      min-height: 132px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .upload-zone input {
+      border: 0;
+      padding: 0;
+      min-height: auto;
+      margin-top: 10px;
+    }
+
+    .fineprint {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: 1fr 72px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      padding: 0;
+      accent-color: var(--teal);
+    }
+
+    .primary {
+      min-height: 46px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--teal);
+      color: white;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .primary:hover {
+      background: var(--teal-dark);
+    }
+
+    .primary:disabled {
+      cursor: wait;
+      opacity: 0.72;
+    }
+
+    .result-grid {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #ffffff;
+      min-height: 116px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 10px;
+      font-size: clamp(1.35rem, 2.5vw, 2.1rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .metric small {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .preview {
+      height: 220px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #101b1a;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scan-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 20%;
+      height: 3px;
+      background: #25d0ba;
+      box-shadow: 0 0 22px #25d0ba;
+      animation: scan 3.4s infinite ease-in-out;
+    }
+
+    @keyframes scan {
+      0%, 100% { top: 18%; }
+      50% { top: 82%; }
+    }
+
+    .mock-window {
+      position: absolute;
+      inset: 22px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .mock-window div {
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.10);
+    }
+
+    .mock-window div:nth-child(1) {
+      grid-column: 1 / -1;
+      height: 30px;
+      background: rgba(37, 208, 186, 0.24);
+    }
+
+    .mock-window div:nth-child(2) {
+      height: 104px;
+    }
+
+    .mock-window div:nth-child(3) {
+      height: 104px;
+      background: rgba(194, 65, 12, 0.28);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: #f5f8f7;
+    }
+
+    .fee-chip {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-weight: 800;
+      color: #14312e;
+      background: #e5f6f1;
+    }
+
+    .premium-grid {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .premium-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+      min-height: 168px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .premium-item b {
+      color: var(--teal-dark);
+    }
+
+    .coming {
+      margin-top: auto;
+      align-self: flex-start;
+      border: 1px solid #e3c074;
+      color: #7c4c09;
+      background: #fff8e8;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.76rem;
+      font-weight: 900;
+    }
+
+    .legal {
+      display: none;
+      padding: 20px;
+      line-height: 1.65;
+      color: #33413f;
+    }
+
+    .legal.active {
+      display: block;
+    }
+
+    .legal h2, .legal h3 {
+      color: var(--ink);
+      letter-spacing: 0;
+    }
+
+    .mobile-top {
+      display: none;
+      padding: 14px 18px;
+      background: #142321;
+      color: white;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mobile-top button {
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      background: transparent;
+      border-radius: 8px;
+      padding: 9px 12px;
+    }
+
+    @media (max-width: 980px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .mobile-top {
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 5;
+      }
+
+      .sidebar {
+        display: none;
+        position: fixed;
+        z-index: 10;
+        inset: 58px auto 0 0;
+        width: 280px;
+        height: calc(100vh - 58px);
+      }
+
+      .sidebar.open {
+        display: flex;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 18px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .two-col, .three-col, .result-grid, .premium-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wide {
+        grid-column: auto;
+      }
+
+      th, td {
+        display: block;
+        width: 100%;
+      }
+
+      tr {
+        display: block;
+        border-bottom: 1px solid var(--line);
+      }
+
+      td {
+        border-bottom: 0;
+        padding-top: 7px;
+        padding-bottom: 7px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-top">
+        <strong>WebWorth</strong>
+    <button id="menuToggle" type="button">Menu</button>
+  </div>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="logo">WW</div>
+        <div>
+          <strong>WebWorth</strong>
+          <span>Developed by Accurate Games and Services</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="App navigation">
+        <button class="nav-link active" data-view="analyzer" type="button">Analyzer</button>
+        <button class="nav-link" data-view="premium" type="button">Premium</button>
+        <button class="nav-link" data-view="privacy" type="button">Privacy</button>
+        <button class="nav-link" data-view="terms" type="button">Terms</button>
+        <button class="nav-link" data-view="refunds" type="button">Refunds</button>
+      </nav>
+      <div class="ad-slot" aria-label="Sidebar advertisement space">Ad space</div>
+      <div class="soon-box">
+        <strong>Premium launching soon</strong>
+        <p>AI screen review, client-ready PDF exports, saved projects, and live exchange rates are prepared as paid upgrades.</p>
+      </div>
+    </aside>
+
+    <main>
+      <section id="view-analyzer" class="view">
+        <div class="topbar">
+          <div>
+            <h1>WebWorth pricing analyzer.</h1>
+            <p class="lede">Developed by Accurate Games and Services. Add a website URL or screen recording, choose the website type, add optional delivery timing and experience, then analyze the quote before comparing payment taxes and fees.</p>
+          </div>
+          <span class="status-pill">Prototype - local only</span>
+        </div>
+
+        <div class="ad-slot" aria-label="Top banner advertisement space">Ad space - banner</div>
+
+        <div class="workspace">
+          <section class="panel" aria-labelledby="input-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="input-title">Project input</h2>
+                <span>Client-side sample analysis</span>
+              </div>
+            </div>
+            <form class="form-grid" id="projectForm">
+              <div class="mode-tabs" role="tablist" aria-label="Input type">
+                <button class="active" type="button" data-mode="url">Website URL</button>
+                <button type="button" data-mode="video">Screen recording</button>
+              </div>
+
+              <label id="urlField">
+                Website URL
+                <input id="websiteUrl" type="url" placeholder="Paste a real website URL for better analysis">
+              </label>
+
+              <label id="videoField" hidden>
+                Upload screen recording
+                <div class="upload-zone">
+                  <div>
+                    <strong>MP4, WebM, or MOV</strong>
+                    <p class="fineprint">The file is not uploaded in this prototype. It is only read by your browser.</p>
+                    <input id="recording" type="file" accept="video/*">
+                  </div>
+                </div>
+              </label>
+
+              <div class="field-group">
+                Delivery timeline (optional)
+                <div class="three-col">
+                  <label class="mini-field">
+                    <span>Days</span>
+                    <input id="days" type="number" min="0" max="365" value="0" placeholder="0" aria-label="Project days">
+                  </label>
+                  <label class="mini-field">
+                    <span>Months</span>
+                    <input id="months" type="number" min="0" max="36" value="3" placeholder="0" aria-label="Project months">
+                  </label>
+                  <label class="mini-field">
+                    <span>Years</span>
+                    <input id="years" type="number" min="0" max="10" value="0" placeholder="0" aria-label="Project years">
+                  </label>
+                </div>
+              </div>
+
+              <div class="field-group">
+                Your experience
+                <div class="two-col">
+                  <label class="mini-field">
+                    <span>Years</span>
+                    <input id="experienceYears" type="number" min="0" max="30" value="4" placeholder="0" aria-label="Experience years">
+                  </label>
+                  <label class="mini-field">
+                    <span>Months</span>
+                    <input id="experienceMonths" type="number" min="0" max="11" value="0" placeholder="0" aria-label="Experience months">
+                  </label>
+                </div>
+              </div>
+
+              <div class="two-col">
+                <label>
+                  Project type
+                  <select id="complexity">
+                    <option value="0.72">Blank page / idea only</option>
+                    <option value="1">Simple landing or brochure</option>
+                    <option value="1.35" selected>Business website</option>
+                    <option value="1.25">Local service page, TV or washing machine repair</option>
+                    <option value="1.75">SaaS or dashboard</option>
+                    <option value="2.15">Ecommerce or marketplace</option>
+                    <option value="2.45">3D website</option>
+                    <option value="2.6">Enterprise workflow</option>
+                  </select>
+                </label>
+                <label>
+                  Client type
+                  <select id="clientType">
+                    <option value="indian" selected>Indian client</option>
+                    <option value="international">International client</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="two-col" id="internationalFields" hidden>
+                <label>
+                  Client market
+                  <select id="region">
+                    <option value="0.9">India / NRI client</option>
+                    <option value="1">United States</option>
+                    <option value="1.08">Europe or UK</option>
+                    <option value="0.82">Southeast Asia</option>
+                    <option value="1.18">Middle East</option>
+                  </select>
+                </label>
+                <label>
+                  Payment method
+                  <select id="paymentMethod">
+                    <option value="razorpay">Razorpay International</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="bank">Bank wire / SWIFT</option>
+                    <option value="wise">Wise Business</option>
+                    <option value="stripe">Stripe International</option>
+                  </select>
+                </label>
+              </div>
+
+              <label>
+                INR per USD
+                <input id="fx" type="number" min="1" step="0.01" value="95.70">
+              </label>
+
+              <button class="primary" id="analyzeButton" type="submit">Analyze pricing</button>
+              <p class="fineprint">Estimates are planning numbers, not legal, tax, accounting, or payment processor advice. Actual fees and taxes depend on your entity, location, bank, invoices, GST status, and processor terms.</p>
+            </form>
+          </section>
+
+          <section class="panel" aria-labelledby="result-title">
+            <div class="panel-header">
+              <div>
+                <h2 id="result-title">Analysis output</h2>
+                <span id="analysisStatus">Ready to analyze</span>
+              </div>
+            </div>
+            <div class="result-grid">
+              <div class="metric">
+                <span id="primaryQuoteLabel">Suggested quote</span>
+                <strong id="usdQuote">$6,075</strong>
+                <small id="quoteNote">Based on optional timeline and experience.</small>
+              </div>
+              <div class="metric">
+                <span id="secondaryQuoteLabel">Approx USD value</span>
+                <strong id="inrQuote">INR 507,263</strong>
+                <small id="fxNote">Using INR 95.70 per USD.</small>
+              </div>
+              <div class="metric">
+                <span id="monthlyQuoteLabel">Monthly retainer</span>
+                <strong id="monthlyQuote">$2,025</strong>
+                <small>Use this for milestone or support pricing.</small>
+              </div>
+              <div class="metric">
+                <span>Confidence</span>
+                <strong id="confidence">78%</strong>
+                <small id="confidenceNote">URL and complexity inputs detected.</small>
+              </div>
+              <div class="metric">
+                <span>Start negotiation</span>
+                <strong id="negotiationQuote">INR 0</strong>
+                <small>Open with this when the client is bargaining.</small>
+              </div>
+              <div class="metric">
+                <span>Last acceptable</span>
+                <strong id="floorQuote">INR 0</strong>
+                <small>Do not go below this unless scope is reduced.</small>
+              </div>
+              <div class="metric">
+                <span>India market</span>
+                <strong id="indiaQuote">INR 0</strong>
+                <small>Reasonable Indian-client price for this input.</small>
+              </div>
+              <div class="metric">
+                <span>US market</span>
+                <strong id="usQuote">$0</strong>
+                <small>Reasonable US-client price for this input.</small>
+              </div>
+              <div class="metric wide">
+                <span>What was analyzed</span>
+                <strong id="analysisSummary">No analysis yet</strong>
+                <small id="analysisAdvice">Click Analyze pricing after adding a URL, recording, or project details.</small>
+              </div>
+              <div class="wide preview" aria-label="Animated website scan preview">
+                <div class="mock-window">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+                <div class="scan-line"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel" style="margin-top: 18px;" aria-labelledby="fees-title">
+          <div class="panel-header">
+            <div>
+              <h2 id="fees-title">Payment and tax estimate after analysis</h2>
+              <span id="feesSubtitle">Choose client type and payment method to adjust</span>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Typical use</th>
+                  <th>Estimated processor and FX cost</th>
+                  <th>Estimated net received</th>
+                  <th>Tax notes</th>
+                </tr>
+              </thead>
+              <tbody id="feeRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="ad-slot" style="margin-top: 18px;" aria-label="Bottom banner advertisement space">Ad space - sponsored placement</div>
+      </section>
+
+      <section id="view-premium" class="view" hidden>
+        <div class="topbar">
+          <div>
+            <h1>Premium features</h1>
+            <p class="lede">These upgrades are marked coming soon so the prototype can show a paid roadmap without pretending the features are already live.</p>
+          </div>
+          <span class="status-pill">Coming soon</span>
+        </div>
+        <section class="panel">
+          <div class="premium-grid">
+            <article class="premium-item">
+              <b>AI screen recording review</b>
+              <p class="fineprint">Detects UX friction, missing trust signals, slow checkout moments, and unclear copy from uploaded recordings.</p>
+              <span class="coming">Coming soon</span>
+            </article>
+            <article class="premium-item">
+              <b>Client-ready PDF report</b>
+              <p class="fineprint">Exports pricing, payment deductions, assumptions, and improvement suggestions with your brand details.</p>
+              <span class="coming">Coming soon</span>
+            </article>
+            <article class="premium-item">
+              <b>Live FX and fee sync</b>
+              <p class="fineprint">Pulls current exchange rates and processor pricing tables before each calculation.</p>
+              <span class="coming">Coming soon</span>
+            </article>
+            <article class="premium-item">
+              <b>Saved client workspaces</b>
+              <p class="fineprint">Stores multiple client URLs, recordings, revisions, quote history, and notes.</p>
+              <span class="coming">Coming soon</span>
+            </article>
+            <article class="premium-item">
+              <b>Tax scenario builder</b>
+              <p class="fineprint">Compares GST, export of services, TDS, W-8BEN, and invoice scenarios with accountant-reviewed templates.</p>
+              <span class="coming">Coming soon</span>
+            </article>
+            <article class="premium-item">
+              <b>Proposal generator</b>
+              <p class="fineprint">Turns the estimate into scope, timeline, deliverables, milestones, and payment terms.</p>
+              <span class="coming">Coming soon</span>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section id="view-privacy" class="view legal panel" hidden>
+        <h2>Privacy Policy</h2>
+        <p><strong>Last updated:</strong> June 1, 2026</p>
+        <p>WebWorth pricing analyzer is currently a local prototype. Website URLs, pricing inputs, and selected files are processed in the browser and are not sent to a server by this static demo.</p>
+        <h3>Information you provide</h3>
+        <p>You may enter a URL, project duration, experience level, complexity, client region, exchange rate, and an optional screen recording. In this prototype, these inputs are used only to calculate the visible estimate.</p>
+        <h3>Future premium services</h3>
+        <p>If cloud accounts, saved workspaces, payments, or AI analysis are added later, this policy should be updated before launch to explain storage, vendors, retention, user rights, deletion, support, and security controls.</p>
+        <h3>Contact</h3>
+        <p>Add your business email, legal entity name, and registered address here before publishing publicly.</p>
+      </section>
+
+      <section id="view-terms" class="view legal panel" hidden>
+        <h2>Terms and Conditions</h2>
+        <p><strong>Last updated:</strong> June 1, 2026</p>
+        <p>WebWorth provides estimation tools for website, game, 3D, and digital service projects. The output is informational and should not be treated as guaranteed pricing, accounting advice, tax advice, legal advice, or payment processor advice.</p>
+        <h3>User responsibilities</h3>
+        <p>You are responsible for checking final quotes, contracts, tax treatment, invoices, payment method costs, and compliance obligations with qualified professionals and official processor documentation.</p>
+        <h3>Uploads and rights</h3>
+        <p>Only upload recordings or materials you have permission to use. Do not upload confidential client material unless your agreement allows it and the production version has appropriate security controls.</p>
+        <h3>Premium availability</h3>
+        <p>Premium features shown in this prototype are coming soon. They do not create a promise of availability, pricing, timeline, or functionality until officially launched.</p>
+      </section>
+
+      <section id="view-refunds" class="view legal panel" hidden>
+        <h2>Refund and Cancellation Policy</h2>
+        <p><strong>Last updated:</strong> June 1, 2026</p>
+        <p>No payments are collected in this prototype. Before launching paid plans, define refund windows, subscription cancellation rules, failed payment handling, tax invoice rules, and support response times.</p>
+        <h3>Suggested launch policy</h3>
+        <p>For monthly subscriptions, allow cancellation before the next billing cycle. For one-time reports, consider refunds only when the paid report cannot be generated due to a platform error.</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const methods = {
+      razorpay: { name: "Razorpay International", use: "Card checkout for overseas clients", fee: 0.035, fixed: 0.30, fx: 0.02, tax: "GST may apply on processor fee. Export of services can be zero-rated only when export conditions, payment receipt, and documentation are satisfied." },
+      paypal: { name: "PayPal", use: "Fast global client payments", fee: 0.044, fixed: 0.30, fx: 0.04, tax: "Processor fee plus FX spread can be high. Keep invoice, FIRC/eBRC where relevant, and check GST and income-tax treatment with a professional." },
+      bank: { name: "Bank wire / SWIFT", use: "Larger B2B invoices", fee: 0.012, fixed: 25, fx: 0.015, tax: "Bank charges vary. For international service exports, documentation and foreign inward remittance proof matter." },
+      wise: { name: "Wise Business", use: "Lower-cost international transfer", fee: 0.012, fixed: 4, fx: 0.006, tax: "Usually transparent FX and transfer fees. Confirm availability, invoice records, and local tax compliance." },
+      stripe: { name: "Stripe International", use: "Cards and invoices in supported markets", fee: 0.039, fixed: 0.30, fx: 0.02, tax: "Card fees, currency conversion, and indirect taxes vary by account country and client location." }
+    };
+
+    const indianMethod = {
+      name: "Indian bank transfer / UPI",
+      use: "Domestic Indian client payment",
+      fee: 0.002,
+      fixed: 0,
+      fx: 0,
+      tax: "For Indian clients, GST is usually charged when applicable based on your registration and service type. Income tax is separate from GST."
+    };
+
+    const state = {
+      mode: "url"
+    };
+
+    const els = {
+      form: document.getElementById("projectForm"),
+      analyzeButton: document.getElementById("analyzeButton"),
+      days: document.getElementById("days"),
+      months: document.getElementById("months"),
+      years: document.getElementById("years"),
+      experienceYears: document.getElementById("experienceYears"),
+      experienceMonths: document.getElementById("experienceMonths"),
+      complexity: document.getElementById("complexity"),
+      clientType: document.getElementById("clientType"),
+      region: document.getElementById("region"),
+      paymentMethod: document.getElementById("paymentMethod"),
+      internationalFields: document.getElementById("internationalFields"),
+      fx: document.getElementById("fx"),
+      websiteUrl: document.getElementById("websiteUrl"),
+      recording: document.getElementById("recording"),
+      usdQuote: document.getElementById("usdQuote"),
+      inrQuote: document.getElementById("inrQuote"),
+      monthlyQuote: document.getElementById("monthlyQuote"),
+      primaryQuoteLabel: document.getElementById("primaryQuoteLabel"),
+      secondaryQuoteLabel: document.getElementById("secondaryQuoteLabel"),
+      monthlyQuoteLabel: document.getElementById("monthlyQuoteLabel"),
+      negotiationQuote: document.getElementById("negotiationQuote"),
+      floorQuote: document.getElementById("floorQuote"),
+      indiaQuote: document.getElementById("indiaQuote"),
+      usQuote: document.getElementById("usQuote"),
+      analysisSummary: document.getElementById("analysisSummary"),
+      analysisAdvice: document.getElementById("analysisAdvice"),
+      quoteNote: document.getElementById("quoteNote"),
+      fxNote: document.getElementById("fxNote"),
+      confidence: document.getElementById("confidence"),
+      confidenceNote: document.getElementById("confidenceNote"),
+      feeRows: document.getElementById("feeRows"),
+      feesSubtitle: document.getElementById("feesSubtitle"),
+      analysisStatus: document.getElementById("analysisStatus"),
+      urlField: document.getElementById("urlField"),
+      videoField: document.getElementById("videoField"),
+      sidebar: document.getElementById("sidebar")
+    };
+
+    let analysisTimer;
+
+    function moneyUsd(value) {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
+    }
+
+    function moneyInr(value) {
+      return "INR " + new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(value);
+    }
+
+    function formatTimeline(days) {
+      if (!days || days <= 0) return "timeline optional";
+      const years = Math.floor(days / 365);
+      const remainingAfterYears = days % 365;
+      const months = Math.floor(remainingAfterYears / 30);
+      const restDays = remainingAfterYears % 30;
+      const parts = [];
+      if (years) parts.push(years + " year" + (years === 1 ? "" : "s"));
+      if (months) parts.push(months + " month" + (months === 1 ? "" : "s"));
+      if (restDays) parts.push(restDays + " day" + (restDays === 1 ? "" : "s"));
+      return parts.join(", ");
+    }
+
+    function formatExperience(years, months) {
+      const parts = [];
+      if (years) parts.push(years + " year" + (years === 1 ? "" : "s"));
+      if (months) parts.push(months + " month" + (months === 1 ? "" : "s"));
+      return parts.length ? parts.join(", ") : "entry level";
+    }
+
+    function calculate() {
+      const rawDays = Math.max(0, Number(els.days.value || 0));
+      const rawMonths = Math.max(0, Number(els.months.value || 0));
+      const rawYears = Math.max(0, Number(els.years.value || 0));
+      const timelineDays = rawDays + (rawMonths * 30) + (rawYears * 365);
+      const months = Math.max(1, timelineDays / 30 || 1);
+      const expYears = Math.max(0, Number(els.experienceYears.value || 0));
+      const expMonths = Math.max(0, Number(els.experienceMonths.value || 0));
+      const exp = expYears + (expMonths / 12);
+      const complexity = Number(els.complexity.value || 1);
+      const isInternational = els.clientType.value === "international";
+      const region = isInternational ? Number(els.region.value || 1) : 1;
+      const fx = Math.max(1, Number(els.fx.value || 95.7));
+      const hasUrl = state.mode === "url" && els.websiteUrl.value.trim().length > 0;
+      const hasRecording = state.mode === "video" && els.recording.files.length > 0;
+      const hasRealInput = hasUrl || hasRecording;
+      const isIdeaOnly = !hasRealInput || complexity < 1;
+      const inputMultiplier = hasRecording ? 1.1 : hasUrl ? 1 : 0.55;
+      const timelineMultiplier = timelineDays ? Math.max(1, Math.sqrt(months)) : 0.78;
+      const scopeMultiplier = timelineMultiplier * complexity * region * inputMultiplier;
+      const durationMultiplier = Math.max(1, months * 0.72);
+      const ideaDays = Math.min(timelineDays, 60);
+      const internationalTotalUsd = isIdeaOnly
+        ? Math.round(75 + (exp * 12) + (complexity * 20) + (ideaDays * 0.4))
+        : Math.round(320 + ((exp * 55) * scopeMultiplier * durationMultiplier));
+      const indianTotalInr = isIdeaOnly
+        ? Math.round(3000 + (exp * 500) + (complexity * 800) + (ideaDays * 15))
+        : Math.round(9000 + ((exp * 1500) * timelineMultiplier * complexity * inputMultiplier * Math.max(1, months * 0.62)));
+      const indiaMarketInr = Math.max(2500, indianTotalInr);
+      const usMarketUsd = Math.max(75, internationalTotalUsd);
+      const totalUsd = isInternational ? internationalTotalUsd : Math.round(indianTotalInr / fx);
+      const totalInr = isInternational ? Math.round(internationalTotalUsd * fx) : indianTotalInr;
+      const monthlyUsd = totalUsd / months;
+      const monthlyInr = totalInr / months;
+      const confidence = Math.min(92, Math.round((hasRealInput ? 52 : 22) + (timelineDays ? 8 : 0) + (exp * 1.8) + (complexity * 5)));
+      const negotiationInr = Math.round(totalInr * 1.14);
+      const floorInr = Math.round(totalInr * 0.82);
+      const negotiationUsd = Math.round(totalUsd * 1.14);
+      const floorUsd = Math.round(totalUsd * 0.82);
+
+      els.usdQuote.textContent = isInternational ? moneyUsd(totalUsd) : moneyInr(totalInr);
+      els.inrQuote.textContent = isInternational ? moneyInr(totalInr) : moneyUsd(totalUsd);
+      els.monthlyQuote.textContent = isInternational ? moneyUsd(monthlyUsd) : moneyInr(monthlyInr);
+      els.negotiationQuote.textContent = isInternational ? moneyUsd(negotiationUsd) : moneyInr(negotiationInr);
+      els.floorQuote.textContent = isInternational ? moneyUsd(floorUsd) : moneyInr(floorInr);
+      els.indiaQuote.textContent = moneyInr(indiaMarketInr);
+      els.usQuote.textContent = moneyUsd(usMarketUsd);
+      els.primaryQuoteLabel.textContent = isInternational ? "Suggested quote" : "Indian client quote";
+      els.secondaryQuoteLabel.textContent = isInternational ? "INR equivalent" : "Approx USD value";
+      els.monthlyQuoteLabel.textContent = isInternational ? "Monthly retainer" : "Monthly INR retainer";
+      els.quoteNote.textContent = "Based on " + formatTimeline(timelineDays) + " and " + formatExperience(expYears, expMonths) + " of experience.";
+      els.fxNote.textContent = isInternational ? "Using today's checked rate: INR " + fx.toFixed(2) + " per USD." : "Approx USD value only; Indian client quote is INR-first.";
+      els.confidence.textContent = confidence + "%";
+      els.confidenceNote.textContent = hasRecording ? "Recording attached for stronger review." : hasUrl ? "URL and project inputs detected." : "No URL or recording yet, so this is a rough idea-only estimate.";
+      els.analysisSummary.textContent = isIdeaOnly ? "Only basic project details were analyzed." : hasRecording ? "Screen recording plus project details were analyzed." : "Website URL plus project details were analyzed.";
+      els.analysisAdvice.textContent = isIdeaOnly ? "For a blank page or idea, start low, discuss scope, and increase price only after seeing real pages, features, and content." : "Use the start negotiation price first, then settle near the suggested quote. The last acceptable price is your lower limit.";
+      els.analysisStatus.textContent = "Analysis complete";
+      els.internationalFields.hidden = !isInternational;
+
+      const selectedMethod = isInternational ? methods[els.paymentMethod.value] : indianMethod;
+      const quoteForFee = isInternational ? totalUsd : totalInr;
+      const fixedFee = isInternational ? selectedMethod.fixed : 0;
+      const cost = (quoteForFee * selectedMethod.fee) + fixedFee + (quoteForFee * selectedMethod.fx);
+      const netUsd = isInternational ? totalUsd - cost : (totalInr - cost) / fx;
+      const netInr = isInternational ? netUsd * fx : totalInr - cost;
+      const totalRate = ((cost / quoteForFee) * 100).toFixed(1);
+      els.feesSubtitle.textContent = isInternational ? "International client selected: showing selected payment method only" : "Indian client selected: showing domestic payment estimate";
+      els.feeRows.innerHTML = "<tr>" +
+        "<td><strong>" + selectedMethod.name + "</strong></td>" +
+        "<td>" + selectedMethod.use + "</td>" +
+        "<td><span class=\"fee-chip\">" + totalRate + "% approx</span><br>" + (isInternational ? moneyUsd(cost) + " / " + moneyInr(cost * fx) : moneyInr(cost) + " / " + moneyUsd(cost / fx)) + "</td>" +
+        "<td><strong>" + (isInternational ? moneyUsd(netUsd) : moneyInr(netInr)) + "</strong><br>" + (isInternational ? moneyInr(netInr) : moneyUsd(netUsd)) + "</td>" +
+        "<td>" + selectedMethod.tax + "</td>" +
+      "</tr>";
+    }
+
+    document.querySelectorAll("[data-mode]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.mode = button.dataset.mode;
+        document.querySelectorAll("[data-mode]").forEach((item) => item.classList.toggle("active", item === button));
+        els.urlField.hidden = state.mode !== "url";
+        els.videoField.hidden = state.mode !== "video";
+        els.analysisStatus.textContent = "Inputs changed - analyze again";
+      });
+    });
+
+    document.querySelectorAll(".nav-link").forEach((button) => {
+      button.addEventListener("click", () => {
+        const view = button.dataset.view;
+        document.querySelectorAll(".nav-link").forEach((item) => item.classList.toggle("active", item === button));
+        document.querySelectorAll(".view").forEach((section) => {
+          section.hidden = section.id !== "view-" + view;
+          section.classList.toggle("active", section.id === "view-" + view);
+        });
+        els.sidebar.classList.remove("open");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+
+    ["input", "change"].forEach((eventName) => {
+      [els.days, els.months, els.years, els.experienceYears, els.experienceMonths, els.complexity, els.clientType, els.region, els.paymentMethod, els.fx, els.websiteUrl, els.recording].forEach((el) => {
+        el.addEventListener(eventName, () => {
+          if (el === els.clientType) {
+            els.internationalFields.hidden = els.clientType.value !== "international";
+          }
+          els.analysisStatus.textContent = "Inputs changed - analyze again";
+        });
+      });
+    });
+
+    els.form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      clearTimeout(analysisTimer);
+      els.analyzeButton.disabled = true;
+      els.analyzeButton.textContent = "Analyzing...";
+      els.analysisStatus.textContent = "Analyzing website and pricing inputs...";
+      analysisTimer = setTimeout(() => {
+        calculate();
+        els.analyzeButton.disabled = false;
+        els.analyzeButton.textContent = "Analyze pricing";
+        document.getElementById("result-title").scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 650);
+    });
+
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      els.sidebar.classList.toggle("open");
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
